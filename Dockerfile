@@ -18,6 +18,9 @@ RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
 # 
 COPY ./app /code
+USER root
+RUN chmod 777 /code/hash.sh
+USER 1001
 
 # 
 CMD ["uvicorn", "service:app", "--host", "0.0.0.0", "--port", "8000"]
