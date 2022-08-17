@@ -119,7 +119,7 @@ class Dejavu:
 
                 self.db.insert_hashes(sid, hashes)
                 self.db.set_song_fingerprinted(sid)
-                self.db.update_song_status(song_id)
+                self.db.update_song_status(song_id,'1')
                 self.__load_fingerprinted_audio_hashes()
 
         pool.close()

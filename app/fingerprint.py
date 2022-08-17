@@ -69,9 +69,11 @@ class Utils:
         num_process = 4
 
         for i in range(0,len(list_info_songs),num_process):
+            self.remove_file('mp3')
             self.init_minio()
             first = i
             last = len(list_info_songs) if i + num_process > len(list_info_songs) else i + num_process
+            print(first,last)
 
             for j in range(first, last):
                 item = list_info_songs[j]
@@ -81,11 +83,9 @@ class Utils:
                                             file_path=f'{directory}/{item[2]}{item[3]}')
 
                 except Exception as e:
-                    print(e)
-                    print(item[2])
+                    print('error:',e)
             try:
                 self.close_minio()
-                print('hash_songs 123')
                 djv.fingerprint_directory(f"{directory}", [".mp3", ".wav"], num_process, song_info)
             except Exception as e:
                 print(item[2])

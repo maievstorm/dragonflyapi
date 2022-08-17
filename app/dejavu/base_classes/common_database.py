@@ -2,7 +2,10 @@ import abc
 from typing import Dict, List, Tuple
 
 from dejavu.base_classes.base_database import BaseDatabase
-
+from dejavu.config.settings import (FIELD_FILE_SHA1, FIELD_FINGERPRINTED,
+                                    FIELD_HASH, FIELD_OFFSET, FIELD_SONG_ID,
+                                    FIELD_SONGNAME, FIELD_TOTAL_HASHES,
+                                    FINGERPRINTS_TABLENAME, SONGS_TABLENAME,CHECK_SONG_TABLENAME,DETAIL_CRAWL)
 
 class CommonDatabase(BaseDatabase, metaclass=abc.ABCMeta):
     # Since several methods across different databases are actually just the same
@@ -176,7 +179,7 @@ class CommonDatabase(BaseDatabase, metaclass=abc.ABCMeta):
                 cur.executemany(self.INSERT_FINGERPRINT, values[index: index + batch_size])
 
     def return_matches(self, fast_check,hashes: List[Tuple[str, int]],
-                       batch_size: int = 1000) -> Tuple[List[Tuple[int, int]], Dict[int, int]]:
+                       batch_size: int = 10000) -> Tuple[List[Tuple[int, int]], Dict[int, int]]:
         """
         Searches the database for pairs of (hash, offset) values.
 
@@ -208,6 +211,26 @@ class CommonDatabase(BaseDatabase, metaclass=abc.ABCMeta):
             for index in range(0, len(values), batch_size):
                 # Create our IN part of the query
                 query = self.SELECT_MULTIPLE % ', '.join([self.IN_MATCH] * len(values[index: index + batch_size]))
+
+            
+                # list_param = ''
+                # max_len = index + batch_size if index + batch_size < len(values) else len(values) 
+                # for i in range(index,max_len):
+                #     list_param += f"decode('{values[i]}', 'hex'),"
+
+                # tmp_query = f"""
+                #     SELECT upper(encode("{FIELD_HASH}", 'hex')), "{FIELD_SONG_ID}", "{FIELD_OFFSET}"
+                #     FROM "{FINGERPRINTS_TABLENAME}"
+                #     WHERE "{FIELD_HASH}" IN ({list_param});
+                # """
+
+
+                # text_file = open("sample.txt", "w")
+                # n = text_file.write(tmp_query)
+                # text_file.close()
+
+
+
 
                 cur.execute(query, values[index: index + batch_size])
 
